@@ -5,6 +5,7 @@
 #include <userver/testsuite/testsuite_support.hpp>
 #include <userver/utils/daemon_run.hpp>
 
+#include "get_products.hpp"
 #include "hello.hpp"
 
 int main(int argc, char* argv[]) {
@@ -14,7 +15,7 @@ int main(int argc, char* argv[]) {
                             .Append<userver::components::HttpClient>()
                             .Append<userver::server::handlers::TestsControl>();
 
-  pg_service_template::AppendHello(component_list);
-
+  product_search::AppendHello(component_list);
+  product_search::AppendGetProducts(component_list);
   return userver::utils::DaemonMain(argc, argv, component_list);
 }

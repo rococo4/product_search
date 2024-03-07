@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.12)
-project(pg_service_template CXX)
+project(product_search CXX)
 
 # Enable userver libraries that are needed in this project
 set(USERVER_FEATURE_POSTGRESQL ON CACHE BOOL "" FORCE)
@@ -19,6 +19,8 @@ userver_setup_environment()
 add_library(${PROJECT_NAME}_objs OBJECT
     src/hello.hpp
     src/hello.cpp
+    src/get_products.cpp
+    src/get_products.hpp
 )
 target_link_libraries(${PROJECT_NAME}_objs PUBLIC userver-postgresql)
 
