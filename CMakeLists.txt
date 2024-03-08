@@ -21,6 +21,11 @@ add_library(${PROJECT_NAME}_objs OBJECT
     src/hello.cpp
     src/get_products.cpp
     src/get_products.hpp
+    src/models/ParseToProduct.cpp
+    src/models/ParseToProduct.hpp
+    src/models/Product.cpp
+    src/models/Product.hpp
+    src/models/ProductType.hpp
 )
 target_link_libraries(${PROJECT_NAME}_objs PUBLIC userver-postgresql)
 

@@ -9,13 +9,14 @@
 #include "hello.hpp"
 
 int main(int argc, char* argv[]) {
-  auto component_list = userver::components::MinimalServerComponentList()
-                            .Append<userver::server::handlers::Ping>()
-                            .Append<userver::components::TestsuiteSupport>()
-                            .Append<userver::components::HttpClient>()
-                            .Append<userver::server::handlers::TestsControl>();
+    auto component_list =
+        userver::components::MinimalServerComponentList()
+            .Append<userver::server::handlers::Ping>()
+            .Append<userver::components::TestsuiteSupport>()
+            .Append<userver::components::HttpClient>()
+            .Append<userver::server::handlers::TestsControl>();
 
-  product_search::AppendHello(component_list);
-  product_search::AppendGetProducts(component_list);
-  return userver::utils::DaemonMain(argc, argv, component_list);
+    product_search::AppendHello(component_list);
+    product_search::AppendGetProducts(component_list);
+    return userver::utils::DaemonMain(argc, argv, component_list);
 }

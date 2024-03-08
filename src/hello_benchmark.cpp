@@ -8,17 +8,17 @@
 #include <userver/engine/run_standalone.hpp>
 
 void HelloBenchmark(benchmark::State& state) {
-  userver::engine::RunStandalone([&] {
-    constexpr std::string_view kNames[] = {"userver", "is", "awesome", "!"};
-    std::uint64_t i = 0;
+    userver::engine::RunStandalone([&] {
+        constexpr std::string_view kNames[] = {"userver", "is", "awesome", "!"};
+        std::uint64_t i = 0;
 
-    for (auto _ : state) {
-      const auto name = kNames[i++ % std::size(kNames)];
-      auto result = product_search::SayHelloTo(
-          name, product_search::UserType::kFirstTime);
-      benchmark::DoNotOptimize(result);
-    }
-  });
+        for (auto _ : state) {
+            const auto name = kNames[i++ % std::size(kNames)];
+            auto result = product_search::SayHelloTo(
+                name, product_search::UserType::kFirstTime);
+            benchmark::DoNotOptimize(result);
+        }
+    });
 }
 
 BENCHMARK(HelloBenchmark);
