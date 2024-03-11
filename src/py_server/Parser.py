@@ -2,7 +2,8 @@ from LxmlSoup import LxmlSoup
 from bs4 import BeautifulSoup
 import requests
 from fp.fp import FreeProxy
-
+from time import sleep
+from random import randint
 proxies = {
             "http" : 'http://35.185.196.38',
             "https" : 'http://35.185.196.38'
@@ -18,37 +19,41 @@ def get_all_urls_from_pages(link_to_type_of_product):
     while(True):
         link_to_type_of_product += f"{i}"
         i += 1
-        print(link_to_type_of_product)
+        sleep(1)
         html = requests.get(link_to_type_of_product).text
-        print(html)
         soup = BeautifulSoup(html)
         links = soup.find_all('a', class_="tile__ttl")
-        #types = soup.find_all('div', class_="tile__catalog-link")
         if (len(links) == 0): 
-            print("yes")
+            print("PIZEZ")
             break
         for link in links:
             url = "https://foodsprice.ru/" + link.get("href")
-            #type = types.text()
-            #print(type)
-            print(url)
             res.append(url)
+            print(url)
+            print()
     return  res
 
 def get_all_urls_by_prod_number(link_to_product):
-    res = []
     # link should be smth like this https://foodsprice.ru/catalog/products/449?sort=price
+    sleep(1)
     html = requests.get(link_to_product).text
     soup = BeautifulSoup(html)
-    types_with_garbage = soup.find_all('input', class_ = 'hidden')
+    filter_items = soup.find_all('div', class_='filter__bubble-inp')
     values = []
-    values_link_to_type_product = {}
-    for type in types_with_garbage:
-        value = type.get("value")
-        values.append(value)
-        name = soup.find('label', {'for': f'ptp_{value}'})#????
-        values_link_to_type_product[value] = name
 
+    values_link_to_type_product = {}
+
+    for item in filter_items:
+        input_element = item.find('input')
+        value = input_element.get('value')
+        name = item.find('label').get_text(strip=True)
+        if (name != 'все типы') :
+            values.append(value)
+            values_link_to_type_product[value] = name
+        
+
+    print(values_link_to_type_product)
+    print("123123123123123123123123123123123")
     # теперь кидаем ссылку в метод get_all_urls_from_pages
     # получаем на выход массив с ссылками на все продукты данного типа(рис басмати - три ссылки)
     # пишем в словарь типа name: array, где name - название типа продукта, а array - массив ссылок
@@ -57,9 +62,9 @@ def get_all_urls_by_prod_number(link_to_product):
     all_dicts = []
     for value in values:
         link_array = get_all_urls_from_pages(link_to_product + f"&types={value}")
+        print(value)
         type_of_product_links[values_link_to_type_product[value]] = link_array 
-        all_dicts.append(type_of_product_links)
-    return all_dicts
+    return type_of_product_links
 
 
 def get_all_links_undercategories(link_to_undercategory):
@@ -75,7 +80,9 @@ def get_all_links_undercategories(link_to_undercategory):
             category_name = item.find('a', class_='categories-products__ttl').text.strip()
             category_link = item.find('a', class_='categories-products__ttl')['href']
             undercategories_dict[category_name] = category_link
+            
     undercategories_to_product_link = {}
+    print(undercategories_dict)
     for undercategory, link in undercategories_dict.items():
         undercategories_to_product_link[undercategory] = get_all_urls_by_prod_number(link)
     return undercategories_to_product_link
@@ -106,14 +113,18 @@ def test():
     all = get_all_links_for_products("https://foodsprice.ru/")
     for first, second in all.items():
         print(first)
-        for first_1, second_1 in first.items():
+        for first_1, second_1 in second.items():
             print(first_1)
             for first_2, second_2 in second_1.items():
                 print(first_2)
                 for first_3, second_3 in second_2.items():
                     print(first_3)
-
-print(get_all_urls_from_pages("https://foodsprice.ru/catalog/products/449?sort=price&types=2499"))
-
-
+def test1():
+    print(get_all_links_undercategories("https://foodsprice.ru/catalog/products/category/8"))
+def test2():
+    res = get_all_urls_by_prod_number("https://foodsprice.ru/catalog/products/449?sort=price")
+    for r in res:
+        print(r)
+        print("--------------")
+test2()
 
