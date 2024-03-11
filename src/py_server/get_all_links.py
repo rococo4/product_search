@@ -4,13 +4,6 @@ import requests
 from fp.fp import FreeProxy
 from time import sleep
 from random import randint
-proxies = {
-            "http" : 'http://35.185.196.38',
-            "https" : 'http://35.185.196.38'
-        }
-header = {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36'
-        }
 def get_all_urls_from_pages(link_to_type_of_product):
     res = []
     # link should be smth like this https://foodsprice.ru/catalog/products/449?sort=price&types=2499
@@ -59,12 +52,12 @@ def get_all_urls_by_prod_number(link_to_product):
     # пишем в словарь типа name: array, где name - название типа продукта, а array - массив ссылок
     # возвращаем что-то типо рис -  {рис басмати:ссылки, рис круглозерновной:ссылки}
     type_of_product_links = {}
-    all_dicts = []
     for value in values:
         link_array = get_all_urls_from_pages(link_to_product + f"&types={value}")
         print(value)
         type_of_product_links[values_link_to_type_product[value]] = link_array 
     return type_of_product_links
+# словарь: подвид продукта: ссылки
 
 
 def get_all_links_undercategories(link_to_undercategory):
@@ -86,7 +79,7 @@ def get_all_links_undercategories(link_to_undercategory):
     for undercategory, link in undercategories_dict.items():
         undercategories_to_product_link[undercategory] = get_all_urls_by_prod_number(link)
     return undercategories_to_product_link
-
+# словарь {подкатергория продукта: {подвид продукта: ссыслки}}
 
 def get_all_links_for_products(link_to_product):
     # link should be smth like that https://foodsprice.ru/
@@ -106,12 +99,12 @@ def get_all_links_for_products(link_to_product):
     for category, link in categories_dict.items():
         categories_to_product_link[category] = get_all_links_undercategories(link)
     return categories_to_product_link
-
+# словарь {категория продукта: {подкатергория продукта: {подвид продукта: ссыслки}}}
 
 
 def test():
-    all = get_all_links_for_products("https://foodsprice.ru/")
-    for first, second in all.items():
+    all_urls = get_all_links_for_products("https://foodsprice.ru/")
+    for first, second in all_urls.items():
         print(first)
         for first_1, second_1 in second.items():
             print(first_1)
@@ -127,4 +120,3 @@ def test2():
         print(r)
         print("--------------")
 test2()
-
