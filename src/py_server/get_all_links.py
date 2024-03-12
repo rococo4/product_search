@@ -4,6 +4,9 @@ import requests
 from fp.fp import FreeProxy
 from time import sleep
 from random import randint
+from store import *
+from product import *
+from pfck import *
 def get_all_urls_from_pages(link_to_type_of_product):
     res = []
     # link should be smth like this https://foodsprice.ru/catalog/products/449?sort=price&types=2499
@@ -77,7 +80,7 @@ def get_all_links_undercategories(link_to_undercategory):
     undercategories_to_product_link = {}
     print(undercategories_dict)
     for undercategory, link in undercategories_dict.items():
-        undercategories_to_product_link[undercategory] = get_all_urls_by_prod_number(link)
+        undercategories_to_product_link[undercategory] = get_all_urls_by_prod_number(link + "?sort=price")
     return undercategories_to_product_link
 # словарь {подкатергория продукта: {подвид продукта: ссыслки}}
 
@@ -102,6 +105,40 @@ def get_all_links_for_products(link_to_product):
 # словарь {категория продукта: {подкатергория продукта: {подвид продукта: ссыслки}}}
 
 
+
+def get_product(link_to_product, category, subcategory, subproduct):
+    html = requests.get(link_to_product).text
+    soup = BeautifulSoup(html)
+    print("1")
+    stores = []
+    for row in soup.find_all('tr'):
+        price_tag = row.find('b', class_='fz20')
+        print("2")
+        if price_tag:
+            price = price_tag.text.strip()
+            store_tag = row.find('b', class_='lsfw-fill-tbl__inline')
+            if store_tag:
+                store = store_tag.text.strip()
+                link_tag = row.find('a', href=True)
+                if link_tag:
+                    link = 'https://foodsprice.ru' + link_tag['href']
+                    stores.append(Store(store, price, link))
+    print("3")
+    name = soup.find('td', string='Название').find_next_sibling('td').text.strip()
+    brand = soup.find('td', string='Бренд').find_next_sibling('td').text.strip()
+    weight = soup.find('td', string='Масса нетто, грамм').find_next_sibling('td').text.strip()
+    protein = soup.find('td', string='Белки (г/100г.)').find_next_sibling('td').text.strip()
+    fats = soup.find('td', string='Жиры (г/100г.)').find_next_sibling('td').text.strip()
+    carbohydrates = soup.find('td', string='Углеводы (г/100г.)').find_next_sibling('td').text.strip()
+    kcal = soup.find('td', string='Энерг. ценность (ккал/100г.)').find_next_sibling('td').text.strip()
+    description_text = soup.find('p', class_='js-description-txt').get_text()
+    link_to_image = soup.find('img')['src']
+    print("4")
+    return Product(name = name, category=category, subcategory=subcategory, 
+                   subproduct=subproduct, link_to_product=link_to_product, brand = brand,
+                   weight=weight, pfck = Pfck(protein,fats, carbohydrates, kcal), 
+                information=description_text, link_to_picture='https://foodsprice.ru' + link_to_image,stores=stores)
+
 def test():
     all_urls = get_all_links_for_products("https://foodsprice.ru/")
     for first, second in all_urls.items():
@@ -116,7 +153,13 @@ def test1():
     print(get_all_links_undercategories("https://foodsprice.ru/catalog/products/category/8"))
 def test2():
     res = get_all_urls_by_prod_number("https://foodsprice.ru/catalog/products/449?sort=price")
-    for r in res:
-        print(r)
-        print("--------------")
-test2()
+    print(res)
+def test3():
+    a = get_product('https://foodsprice.ru/product/318209', '1', '2', '3')
+    stores = a.get_stores()
+    print(a)
+    for i in stores:
+        print(i)
+def test4():
+    res = get_all_links_undercategories("https://foodsprice.ru/catalog/products/category/8")
+test3()
