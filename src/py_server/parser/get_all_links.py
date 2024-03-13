@@ -138,6 +138,19 @@ def get_product(link_to_product, category, subcategory, subproduct):
                    subproduct=subproduct, link_to_product=link_to_product, brand = brand,
                    weight=weight, pfck = Pfck(protein,fats, carbohydrates, kcal), 
                 information=description_text, link_to_picture='https://foodsprice.ru' + link_to_image,stores=stores)
+def get_products(categories_dict):
+    prds = []
+    for category, subcategories in categories_dict.items():
+        category_name = category
+        for subcategory, subproducts in subcategories.items():
+            subcategory_name = subcategory
+            for subproduct, urls in subproducts.items():
+             #   subproduct_id = insert_subproduct(cur, subproduct, subcategory_id)
+                subproduct_name = subproduct
+               # insert_urls(cur, urls, subproduct_id)
+                for url in urls:
+                    prds.append(get_product(url, category_name, subcategory_name, subproduct_name))
+    return prds
 
 def test():
     all_urls = get_all_links_for_products("https://foodsprice.ru/")
