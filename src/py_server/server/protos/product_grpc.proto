@@ -1,0 +1,50 @@
+syntax = "proto3";
+
+message Product {
+  reserved 1;
+  string name = 2;
+  string category = 3;
+  string subcategory = 4;
+  string subproduct = 5;
+  string link_to_product = 6;
+  string link_to_picture = 7;
+  string brand = 8;
+  int32 weight = 9;
+  Pfck pfck = 10;
+  string information = 11;
+  repeated Store stores = 12;
+}
+
+message Pfck {
+  reserved 1;
+  double protein = 2;
+  double fat = 3;
+  double carbohydrates = 4;
+  double kcal = 5;
+}
+
+message Store {
+  reserved 1;
+  string name = 2;
+  double price = 3;
+  string link_to_store = 4;
+}
+
+message ProductResponse {
+    Product product = 1;
+}
+message SearchRequest {
+    string search_request = 1;
+}
+message ProductRequest {
+    string product_id = 1;
+}
+message ProductResponses {
+    repeated Product product = 1;
+}
+message Empty {}
+service ProductService {
+    rpc SearchProduct(SearchRequest) returns (ProductResponses);
+    rpc GetProduct(ProductRequest) returns (ProductResponse);
+    rpc GetProducts(Empty) returns (ProductResponses);
+};

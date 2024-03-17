@@ -1,4 +1,4 @@
-from pfck import Pfck
+from models.pfck import Pfck
 class Product:
     def __init__(self, name, category, subcategory, subproduct, 
                  link_to_product, link_to_picture, brand, weight, pfck, information,stores):
